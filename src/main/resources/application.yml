@@ -1,0 +1,2 @@
+endpoints:
+  flight-radar: http://data-live.flightradar24.com/
