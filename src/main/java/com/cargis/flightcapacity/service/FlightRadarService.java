@@ -17,4 +17,8 @@ public class FlightRadarService {
         return flightRadarClient.getFlights();
     }
 
+    public JSONObject getFlightDetail(String flightId, String version) {
+        return flightRadarClient.getFlightDetail(flightId, version);
+    }
+
 }

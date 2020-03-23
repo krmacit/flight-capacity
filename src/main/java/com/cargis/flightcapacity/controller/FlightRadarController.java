@@ -6,8 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = FlightRadarController.ENDPOINT, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -22,6 +21,11 @@ public class FlightRadarController {
     @RequestMapping(value = "/flights")
     public ResponseEntity<JSONObject> getFlights() {
         return ResponseEntity.ok(flightRadarService.getFlights());
+    }
+
+    @RequestMapping(value = "/flights/{flightId}")
+    public ResponseEntity<JSONObject> getFlightDetail(@PathVariable String flightId, @RequestParam(defaultValue = "1.5") String version) {
+        return ResponseEntity.ok(flightRadarService.getFlightDetail(flightId, version));
     }
 
 }
