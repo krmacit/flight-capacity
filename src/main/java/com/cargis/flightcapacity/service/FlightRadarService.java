@@ -14,7 +14,13 @@ public class FlightRadarService {
     private final FlightRadarClient flightRadarClient;
 
     public JSONObject getFlights() {
-        return flightRadarClient.getFlights();
+        JSONObject combined = new JSONObject();
+        String bound;
+        for (int i = 0 ; i < 18; i++){
+            bound = "89.93,-89.95," + (-180 + i * 20) + ".00," + (-180 + (i + 1) * 20) + ".00";
+            combined.put(("flights " + i),flightRadarClient.getFlights(bound));
+        }
+        return combined;
     }
 
     public JSONObject getFlightDetail(String flightId, String version) {
