@@ -35,11 +35,11 @@ public class FlightRadarService {
 
     @SneakyThrows
     public void getAllFlightsDetails(ArrayList<String> flightIds) {
-        int count = 29;
+        int count = 19;
         for (String id:flightIds){
             getFlightDetail(id, "1.5");
             count++;
-            if (count == 30){
+            if (count == 20){
                 TimeUnit.SECONDS.sleep(5);
                 count = 0;
             }
