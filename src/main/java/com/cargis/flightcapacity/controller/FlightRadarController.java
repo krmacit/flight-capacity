@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping(value = FlightRadarController.ENDPOINT, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -19,7 +21,7 @@ public class FlightRadarController {
     private final FlightRadarService flightRadarService;
 
     @RequestMapping(value = "/flights")
-    public ResponseEntity<JSONObject> getFlights() {
+    public ResponseEntity<ArrayList<String>> getFlights() {
         return ResponseEntity.ok(flightRadarService.getFlights());
     }
 
