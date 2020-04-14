@@ -1,6 +1,9 @@
 package com.cargis.flightcapacity.service;
 
 import com.cargis.flightcapacity.client.flightradar.FlightRadarClient;
+import com.cargis.flightcapacity.controller.FlightNumberController;
+import com.cargis.flightcapacity.model.FlightNumber;
+import com.cargis.flightcapacity.repository.FlightNumberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,9 @@ public class FlightRadarService {
     @Autowired
     private FlightRadarClient flightRadarClient;
 
+    @Autowired
+    private FlightNumberService flightNumberService;
+
     public ArrayList<String> getFlights() throws InterruptedException {
         String bound, id;
         ArrayList<String> flightIds = new ArrayList<String>();
@@ -29,6 +35,9 @@ public class FlightRadarService {
                 id = itr.next();
                 if (!id.equals("full_count") && !id.equals("version")) flightIds.add(id);
             }
+            FlightNumber fN = new FlightNumber((long) 12,"TKden", "11", 11);
+            log.info(fN.toString());
+            flightNumberService.create(fN);
         }
         //getAllFlightsDetails(flightIds);
         return flightIds;

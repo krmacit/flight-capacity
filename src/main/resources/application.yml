@@ -3,15 +3,16 @@ endpoints:
 
 spring:
   jpa:
-    show-sql: true
     properties:
       hibernate:
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         temp:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
       ddl-auto: create-drop
+    show-sql: true
   datasource:
     url: jdbc:postgresql://localhost:5432/FLIGHT_CAPACITY
     username: postgres
