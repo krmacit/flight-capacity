@@ -35,7 +35,7 @@ public class FlightRadarService {
                 id = itr.next();
                 if (!id.equals("full_count") && !id.equals("version")) flightIds.add(id);
             }
-            FlightNumber fN = new FlightNumber((long) 12,"TKden", "11", 11);
+            FlightNumber fN = FlightNumber.builder().number("TK1234").build();
             log.info(fN.toString());
             flightNumberService.create(fN);
         }
