@@ -2,8 +2,7 @@ package com.cargis.flightcapacity.service;
 
 import com.cargis.flightcapacity.model.FlightNumber;
 import com.cargis.flightcapacity.repository.FlightNumberRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,26 +10,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class FlightNumberService {
 
-    @Autowired
-    private FlightNumberRepository flightNumberRepository;
+    private final FlightNumberRepository flightNumberRepository;
 
     public FlightNumber create(FlightNumber flightNumber) {
         return flightNumberRepository.save(flightNumber);
     }
-
-    public FlightNumber createIfNotExits(FlightNumber flightNumber) {
-        if (findAll().contains(flightNumber)){
-            return flightNumber;
-        }
-        else {
-            return flightNumberRepository.save(flightNumber);
-        }
-    }
-
-
 
     public List<FlightNumber> findAll() {
         List<FlightNumber> flightNumbers = new ArrayList<>();
@@ -38,7 +25,7 @@ public class FlightNumberService {
         return flightNumbers;
     }
 
-    public Optional<FlightNumber> findByID(Long longId) {
+    public Optional<FlightNumber> findById(Long longId) {
         return flightNumberRepository.findById(longId);
     }
 

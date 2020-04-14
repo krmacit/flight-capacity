@@ -1,8 +1,16 @@
 package com.cargis.flightcapacity.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="FLIGHT_NUMBER")
@@ -10,14 +18,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @Data
-@ToString
 public class FlightNumber {
-
-    public FlightNumber(String number, String carrierCode, int flightCode){
-        this.number = number;
-        this.carrierCode = carrierCode;
-        this.flightCode = flightCode;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
