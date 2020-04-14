@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +28,25 @@ public class FlightRadarService {
                 id = itr.next();
                 if (!id.equals("full_count") && !id.equals("version")) flightIds.add(id);
             }
-            FlightNumber fN = FlightNumber.builder().number("TK1234").build();
-            flightNumberService.create(fN);
+
+            mergeFlightNumber("TK1212");
+
         }
         return flightIds;
+    }
+
+    private void mergeFlightNumber(String number) {
+        Optional<FlightNumber> optional = flightNumberService.findByNumber(number);
+        FlightNumber flightNumber;
+        if (optional.isPresent()) {
+            flightNumber = optional.get();
+            flightNumber.setNumber(number);
+        } else {
+            flightNumber = new FlightNumber();
+        }
+
+        flightNumber.setNumber(number);
+        flightNumberService.save(flightNumber);
     }
 
     public JSONObject getFlightDetail(String flightId, String version) {

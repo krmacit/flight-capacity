@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface FlightNumberRepository extends CrudRepository<FlightNumber, Long> {
-    Optional<FlightNumber> findOneByNumber(String number);
+    Optional<FlightNumber> findByNumber(String number);
 }

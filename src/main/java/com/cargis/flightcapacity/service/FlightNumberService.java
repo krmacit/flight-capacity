@@ -15,7 +15,7 @@ public class FlightNumberService {
 
     private final FlightNumberRepository flightNumberRepository;
 
-    public FlightNumber create(FlightNumber flightNumber) {
+    public FlightNumber save(FlightNumber flightNumber) {
         return flightNumberRepository.save(flightNumber);
     }
 
@@ -25,12 +25,15 @@ public class FlightNumberService {
         return flightNumbers;
     }
 
-    public Optional<FlightNumber> findById(Long longId) {
-        return flightNumberRepository.findById(longId);
+    public Optional<FlightNumber> findById(Long id) {
+        return flightNumberRepository.findById(id);
     }
 
-    public Void delete(Long id) {
+    public Optional<FlightNumber> findByNumber(String number) {
+        return flightNumberRepository.findByNumber(number);
+    }
+
+    public void delete(Long id) {
         flightNumberRepository.deleteById(id);
-        return null;
     }
 }

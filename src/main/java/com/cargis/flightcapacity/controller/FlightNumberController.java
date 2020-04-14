@@ -27,7 +27,7 @@ public class FlightNumberController {
 
     @PostMapping(value = "/create")
     public ResponseEntity<FlightNumber> create(@RequestBody FlightNumber flightNumber) {
-        return ResponseEntity.ok(flightNumberService.create(flightNumber));
+        return ResponseEntity.ok(flightNumberService.save(flightNumber));
     }
 
     @GetMapping
@@ -42,7 +42,8 @@ public class FlightNumberController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(flightNumberService.delete(id));
+        flightNumberService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
