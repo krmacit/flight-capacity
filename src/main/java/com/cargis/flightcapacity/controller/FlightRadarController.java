@@ -22,7 +22,7 @@ public class FlightRadarController {
     private final FlightRadarService flightRadarService;
 
     @RequestMapping(value = "/flights")
-    public ResponseEntity<ArrayList<String>> getFlights() throws InterruptedException {
+    public ResponseEntity<String> getFlights() throws InterruptedException {
         return ResponseEntity.ok(flightRadarService.getFlights());
     }
 

@@ -11,8 +11,8 @@ spring:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: update
+    show-sql: false
   datasource:
     url: jdbc:postgresql://localhost:5432/FLIGHT_CAPACITY
     username: postgres
