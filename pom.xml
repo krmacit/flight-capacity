@@ -20,6 +20,7 @@
         <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
         <spring.cloud.version>Hoxton.RELEASE</spring.cloud.version>
         <json.simple.version>1.1.1</json.simple.version>
+        <apache.commons.version>3.9</apache.commons.version>
     </properties>
 
     <dependencyManagement>
@@ -83,7 +84,6 @@
             <artifactId>powermock-api-mockito2</artifactId>
             <version>${powermock.version}</version>
         </dependency>
-
 
     </dependencies>
 

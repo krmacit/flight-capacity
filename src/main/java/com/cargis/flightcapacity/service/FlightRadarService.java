@@ -13,6 +13,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FlightRadarService {
 
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
     private final FlightRadarClient flightRadarClient;
     private final FlightNumberService flightNumberService;
 
@@ -29,11 +41,10 @@ public class FlightRadarService {
             jsonObject = flightRadarClient.getFlights(bound);
             keys = jsonObject.keySet().iterator();
             for (; keys.hasNext(); ) {
-                key = keys.next().toString();
+                key = keys.next();
                 if (!key.equals("full_count") && !key.equals("version")) {
                     String[] values = jsonObject.get(key).toString().split(",");
-                    if (!values[11].equals("0") && !values[12].equals("0") && values[13].length() > 2 && values[13].length() < 7) {
-                        System.out.println(String.join(",", values));
+                    if (!values[11].equals("0") && !values[12].equals("0") && values[13].length() > 2 && isNumeric(values[13].substring(3))) {
                         mergeFlightNumber(values[13]);
                     }
                 }
@@ -53,6 +64,8 @@ public class FlightRadarService {
         }
 
         flightNumber.setNumber(number);
+        flightNumber.setCarrierCode(number.substring(0, 3));
+        flightNumber.setFlightCode(Integer.parseInt(number.substring(3)));
         flightNumberService.save(flightNumber);
     }
 
