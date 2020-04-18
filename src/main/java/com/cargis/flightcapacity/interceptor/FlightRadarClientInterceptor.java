@@ -3,7 +3,6 @@ package com.cargis.flightcapacity.interceptor;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.Builder;
-import lombok.extern.slf4j.Slf4j;
 
 @Builder
 public class FlightRadarClientInterceptor implements RequestInterceptor {

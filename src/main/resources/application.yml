@@ -1,5 +1,6 @@
 endpoints:
   flight-radar: http://data-live.flightradar24.com/
+  flight-radar-api: https://api.flightradar24.com/
 
 spring:
   jpa:

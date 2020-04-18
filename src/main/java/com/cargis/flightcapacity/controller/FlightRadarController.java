@@ -31,4 +31,9 @@ public class FlightRadarController {
         return ResponseEntity.ok(flightRadarService.getFlightDetail(flightId, version));
     }
 
+    @RequestMapping(value = "/flightDetails/{query}")
+    public ResponseEntity<JSONObject> getFlightDetails(@PathVariable String query, @RequestParam(defaultValue = "flight") String fetchBy, @RequestParam(defaultValue = "100") String limit, @RequestParam(defaultValue = "1") String page) {
+        return ResponseEntity.ok(flightRadarService.getFlightDetails(query, fetchBy, limit, page));
+    }
+
 }

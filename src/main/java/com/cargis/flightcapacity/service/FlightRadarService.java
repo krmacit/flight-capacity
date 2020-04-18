@@ -1,10 +1,12 @@
 package com.cargis.flightcapacity.service;
 
 import com.cargis.flightcapacity.client.flightradar.FlightRadarClient;
+import com.cargis.flightcapacity.client.flightradar.FlightRadarApiClient;
 import com.cargis.flightcapacity.model.FlightNumber;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class FlightRadarService {
     }
 
     private final FlightRadarClient flightRadarClient;
+    private final FlightRadarApiClient flightRadarApiClient;
     private final FlightNumberService flightNumberService;
 
     public String getFlights() {
@@ -71,6 +74,10 @@ public class FlightRadarService {
 
     public JSONObject getFlightDetail(String flightId, String version) {
         return flightRadarClient.getFlightDetail(flightId, version);
+    }
+
+    public JSONObject getFlightDetails(String query, String fetchBy, String limit, String page) {
+        return flightRadarApiClient.getFlightDetails(query);
     }
 
 }
