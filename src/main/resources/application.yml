@@ -12,7 +12,7 @@ spring:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
   datasource:
     url: jdbc:postgresql://localhost:5432/FLIGHT_CAPACITY
