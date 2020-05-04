@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name="FLIGHT_NUMBER")
@@ -33,5 +34,14 @@ public class FlightNumber {
 
     @Column(name="FLIGHT_CODE")
     private Integer flightCode;
+
+    @Column(name="CREATED_DATE")
+    private OffsetDateTime createdDate;
+
+    @Column(name="LAST_SEEN_DATE")
+    private OffsetDateTime lastSeenDate;
+
+    @Column(name="UPDATED_DATE")
+    private OffsetDateTime updatedDate;
 
 }

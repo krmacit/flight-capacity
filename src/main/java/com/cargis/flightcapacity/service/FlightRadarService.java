@@ -1,13 +1,14 @@
 package com.cargis.flightcapacity.service;
 
-import com.cargis.flightcapacity.client.flightradar.FlightRadarClient;
 import com.cargis.flightcapacity.client.flightradar.FlightRadarApiClient;
+import com.cargis.flightcapacity.client.flightradar.FlightRadarClient;
 import com.cargis.flightcapacity.model.FlightNumber;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -43,12 +44,13 @@ public class FlightRadarService {
             bound = latitude + (-180 + i * 20) + ".00," + (-180 + (i + 1) * 20) + ".00";
             jsonObject = flightRadarClient.getFlights(bound);
             keys = jsonObject.keySet().iterator();
+            OffsetDateTime strDate = OffsetDateTime.now(ZoneId.of("UTC+03:00"));
             for (; keys.hasNext(); ) {
                 key = keys.next();
                 if (!key.equals("full_count") && !key.equals("version")) {
                     String[] values = jsonObject.get(key).toString().split(",");
                     if (!values[11].equals("0") && !values[12].equals("0") && values[13].length() > 2 && isNumeric(values[13].substring(3))) {
-                        mergeFlightNumber(values[13]);
+                        mergeFlightNumber(values[13], strDate);
                     }
                 }
             }
@@ -56,19 +58,20 @@ public class FlightRadarService {
         return "Flight Numbers process completed.";
     }
 
-    private void mergeFlightNumber(String number) {
+    private void mergeFlightNumber(String number, OffsetDateTime time) {
+        System.out.println(time);
         Optional<FlightNumber> optional = flightNumberService.findByNumber(number);
         FlightNumber flightNumber;
         if (optional.isPresent()) {
             flightNumber = optional.get();
-            flightNumber.setNumber(number);
         } else {
             flightNumber = new FlightNumber();
+            flightNumber.setNumber(number);
+            flightNumber.setCarrierCode(number.substring(0, 3));
+            flightNumber.setFlightCode(Integer.parseInt(number.substring(3)));
+            flightNumber.setCreatedDate(time);
         }
-
-        flightNumber.setNumber(number);
-        flightNumber.setCarrierCode(number.substring(0, 3));
-        flightNumber.setFlightCode(Integer.parseInt(number.substring(3)));
+        flightNumber.setLastSeenDate(time);
         flightNumberService.save(flightNumber);
     }
 
