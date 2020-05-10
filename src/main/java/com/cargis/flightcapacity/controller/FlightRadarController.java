@@ -20,8 +20,9 @@ public class FlightRadarController {
     private final FlightRadarService flightRadarService;
 
     @RequestMapping(value = "/flights")
-    public ResponseEntity<String> getFlights() throws InterruptedException {
-        return ResponseEntity.ok(flightRadarService.getFlights());
+    public ResponseEntity getFlights() {
+        flightRadarService.getFlights();
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = "/flights/{flightId}")
@@ -30,8 +31,9 @@ public class FlightRadarController {
     }
 
     @RequestMapping(value = "/flightDetail/{query}")
-    public ResponseEntity<String> getFlightDetails(@PathVariable String query) {
-        return ResponseEntity.ok(flightRadarService.getFlightDetails(query));
+    public ResponseEntity getFlightDetails(@PathVariable String query) {
+        flightRadarService.getFlightDetails(query);
+        return ResponseEntity.ok().build();
     }
 
 }

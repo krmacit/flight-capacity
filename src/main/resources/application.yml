@@ -20,3 +20,8 @@ spring:
     password: 899091
   liquibase:
     change-log: classpath:db/changelog.xml
+
+flight-radar:
+  api:
+    get-flights:
+      non-valid-keys: full_count;version
