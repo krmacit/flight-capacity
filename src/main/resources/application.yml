@@ -12,9 +12,11 @@ spring:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: none
+    show-sql: true
   datasource:
     url: jdbc:postgresql://localhost:5432/FLIGHT_CAPACITY
     username: postgres
     password: 899091
+  liquibase:
+    change-log: classpath:db/changelog.xml

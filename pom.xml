@@ -21,6 +21,7 @@
         <spring.cloud.version>Hoxton.RELEASE</spring.cloud.version>
         <json.simple.version>1.1.1</json.simple.version>
         <apache.commons.version>3.9</apache.commons.version>
+        <liquibase.version>3.8.9</liquibase.version>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +72,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
         </dependency>
 
         <dependency>

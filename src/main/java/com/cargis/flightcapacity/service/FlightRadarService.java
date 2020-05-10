@@ -7,10 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
+
+import static com.cargis.flightcapacity.util.DateUtils.getCurrentDate;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class FlightRadarService {
     private final FlightRadarClient flightRadarClient;
     private final FlightRadarApiClient flightRadarApiClient;
     private final FlightNumberService flightNumberService;
+    private final FlightDetailService flightDetailService;
 
     public String getFlights() {
         String bound;
@@ -44,13 +48,13 @@ public class FlightRadarService {
             bound = latitude + (-180 + i * 20) + ".00," + (-180 + (i + 1) * 20) + ".00";
             jsonObject = flightRadarClient.getFlights(bound);
             keys = jsonObject.keySet().iterator();
-            OffsetDateTime strDate = OffsetDateTime.now(ZoneId.of("UTC+03:00"));
+            Date currentDate = getCurrentDate();
             for (; keys.hasNext(); ) {
                 key = keys.next();
                 if (!key.equals("full_count") && !key.equals("version")) {
                     String[] values = jsonObject.get(key).toString().split(",");
                     if (!values[11].equals("0") && !values[12].equals("0") && values[13].length() > 2 && isNumeric(values[13].substring(3))) {
-                        mergeFlightNumber(values[13], strDate);
+                        mergeFlightNumber(values[13], currentDate);
                     }
                 }
             }
@@ -58,8 +62,7 @@ public class FlightRadarService {
         return "Flight Numbers process completed.";
     }
 
-    private void mergeFlightNumber(String number, OffsetDateTime time) {
-        System.out.println(time);
+    private void mergeFlightNumber(String number, Date currentDate) {
         Optional<FlightNumber> optional = flightNumberService.findByNumber(number);
         FlightNumber flightNumber;
         if (optional.isPresent()) {
@@ -69,10 +72,26 @@ public class FlightRadarService {
             flightNumber.setNumber(number);
             flightNumber.setCarrierCode(number.substring(0, 3));
             flightNumber.setFlightCode(Integer.parseInt(number.substring(3)));
-            flightNumber.setCreatedDate(time);
+            flightNumber.setCreatedDate(currentDate);
         }
-        flightNumber.setLastSeenDate(time);
+        flightNumber.setLastSeenDate(currentDate);
         flightNumberService.save(flightNumber);
+    }
+
+    public String getFlightDetails(String flightNumber) {
+        JSONObject jsonObject = flightRadarApiClient.getFlightDetails(flightNumber);
+
+        Map results = (Map) ((Map) jsonObject.get("result")).get("response");
+        for (int i = 0; i < (Integer) ((Map) results.get("item")).get("current"); i++) {
+            mergeFlightDetails((ArrayList) results.get("data"));
+        }
+        return "Flight Details of " + flightNumber + " have been precessed successfully";
+    }
+
+    private void mergeFlightDetails(ArrayList flightDetail) {
+        //flightDetailService.findByFlight_numberAndReal_dep_time("","");
+        System.out.println(flightDetail.toString());
+
     }
 
     public JSONObject getFlightDetail(String flightId, String version) {

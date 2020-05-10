@@ -1,35 +1,43 @@
 package com.cargis.flightcapacity.service;
 
-import com.cargis.flightcapacity.model.FlightDetails;
-import com.cargis.flightcapacity.repository.FlightDetailsRepository;
+import com.cargis.flightcapacity.model.FlightDetail;
+import com.cargis.flightcapacity.repository.FlightDetailRepository;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class FlightDetailService {
 
-    private final FlightDetailsRepository flightDetailsRepository;
+    private final FlightDetailRepository flightDetailRepository;
 
-    public FlightDetails save(FlightDetails flightDetails) {
-        return flightDetailsRepository.save(flightDetails);
+    public FlightDetail save(FlightDetail flightDetail) {
+        return flightDetailRepository.save(flightDetail);
     }
 
-    public List<FlightDetails> findAll() {
-        List<FlightDetails> flightDetails = new ArrayList<>();
-        flightDetailsRepository.findAll().forEach(flightDetails::add);
+    public List<FlightDetail> findAll() {
+        List<FlightDetail> flightDetails = new ArrayList<>();
+        flightDetailRepository.findAll().forEach(flightDetails::add);
         return flightDetails;
     }
 
-    public Optional<FlightDetails> findById(Long id) {
-        return flightDetailsRepository.findById(id);
+    public Optional<FlightDetail> findById(Long id) {
+        return flightDetailRepository.findById(id);
+    }
+
+    public FlightDetail findByFlightNumberAndActualDepartureTime(String flightNumber, Date actualDepartureTime) {
+        return flightDetailRepository.findByFlightNumberAndActualDepartureTime(flightNumber, actualDepartureTime)
+                .orElseThrow(() -> new NoSuchElementException("Flight Detail can not be found!"));
     }
 
     public void delete(Long id) {
-        flightDetailsRepository.deleteById(id);
+        flightDetailRepository.deleteById(id);
     }
 }

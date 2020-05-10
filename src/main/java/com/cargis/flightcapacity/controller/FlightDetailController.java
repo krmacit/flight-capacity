@@ -1,6 +1,6 @@
 package com.cargis.flightcapacity.controller;
 
-import com.cargis.flightcapacity.model.FlightDetails;
+import com.cargis.flightcapacity.model.FlightDetail;
 import com.cargis.flightcapacity.service.FlightDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -12,8 +12,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = FlightDetailsController.ENDPOINT, produces = MediaType.APPLICATION_JSON_VALUE)
-public class FlightDetailsController {
+@RequestMapping(value = FlightDetailController.ENDPOINT, produces = MediaType.APPLICATION_JSON_VALUE)
+public class FlightDetailController {
 
     public static final String ENDPOINT = "flight-details";
 
@@ -21,12 +21,12 @@ public class FlightDetailsController {
 
 
     @PostMapping(value = "/create")
-    public ResponseEntity<FlightDetails> create(@RequestBody FlightDetails flightDetails) {
-        return ResponseEntity.ok(flightDetailService.save(flightDetails));
+    public ResponseEntity<FlightDetail> create(@RequestBody FlightDetail flightDetail) {
+        return ResponseEntity.ok(flightDetailService.save(flightDetail));
     }
 
     @GetMapping
-    public ResponseEntity<List<FlightDetails>> findAll() {
+    public ResponseEntity<List<FlightDetail>> findAll() {
         return ResponseEntity.ok(flightDetailService.findAll());
     }
 
