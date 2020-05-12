@@ -27,4 +27,12 @@ public class DateUtils {
         return tomorrow;
     }
 
+    public static Date epochToDate(Integer epoch){
+        Date date = null;
+        if (epoch != null) {
+            date = new Date(Long.parseLong(epoch.toString())*1000);
+        }
+        return date;
+    }
+
 }

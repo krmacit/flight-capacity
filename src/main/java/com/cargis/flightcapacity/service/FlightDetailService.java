@@ -1,6 +1,7 @@
 package com.cargis.flightcapacity.service;
 
 import com.cargis.flightcapacity.model.FlightDetail;
+import com.cargis.flightcapacity.model.FlightNumber;
 import com.cargis.flightcapacity.repository.FlightDetailRepository;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,8 @@ public class FlightDetailService {
         return flightDetailRepository.findById(id);
     }
 
-    public FlightDetail findByFlightNumberAndActualDepartureTime(String flightNumber, Date actualDepartureTime) {
-        return flightDetailRepository.findByFlightNumberAndActualDepartureTime(flightNumber, actualDepartureTime)
-                .orElseThrow(() -> new NoSuchElementException("Flight Detail can not be found!"));
+    public Optional<FlightDetail> findByFlightNumberAndActualDepartureTime(String flightNumber, Date actualDepartureTime) {
+        return flightDetailRepository.findByFlightNumberAndActualDepartureTime(flightNumber, actualDepartureTime);
     }
 
     public void delete(Long id) {

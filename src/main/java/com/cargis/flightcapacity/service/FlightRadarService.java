@@ -2,7 +2,9 @@ package com.cargis.flightcapacity.service;
 
 import com.cargis.flightcapacity.client.flightradar.FlightRadarApiClient;
 import com.cargis.flightcapacity.client.flightradar.FlightRadarClient;
+import com.cargis.flightcapacity.model.FlightDetail;
 import com.cargis.flightcapacity.model.FlightNumber;
+import com.cargis.flightcapacity.util.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +14,15 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -88,14 +94,62 @@ public class FlightRadarService {
         JSONObject jsonObject = flightRadarApiClient.getFlightDetails(flightNumber);
         Map results = (Map) ((Map) jsonObject.get("result")).get("response");
         int itemCount = (Integer) ((Map) results.get("item")).get("current");
+        ArrayList<HashMap> allFlightDataList = (ArrayList) results.get("data");
         for (int i = 0; i < itemCount ; i++) {
-            mergeFlightDetails((ArrayList) results.get("data"));
+            mergeFlightDetails(allFlightDataList.get(i));
         }
         log.info("Flight Details with: {} have been processed successfully", flightNumber);
     }
 
-    private void mergeFlightDetails(ArrayList flightDetail) {
-        log.info(flightDetail.toString());
+    private void mergeFlightDetails(HashMap flightDetail) {
+        HashMap flightIdentification = (HashMap) flightDetail.get("identification");
+        HashMap flightStatus = (HashMap) flightDetail.get("status");
+        HashMap flightAircraft = (HashMap) flightDetail.get("aircraft");
+        HashMap flightOwner = (HashMap) flightDetail.get("owner");
+        HashMap flightOriginDetails = (HashMap)((HashMap) flightDetail.get("airport")).get("origin");
+        HashMap flightDestinationDetails = (HashMap)((HashMap) flightDetail.get("airport")).get("destination");
+        HashMap flightActualTimeDetails = (HashMap)((HashMap) flightDetail.get("time")).get("real");
+        HashMap flightScheduledTimeDetails = (HashMap)((HashMap) flightDetail.get("time")).get("scheduled");
+        Date departureTime = DateUtils.epochToDate((Integer)flightActualTimeDetails.get("departure"));
+        String flightNumber = (String)((HashMap) flightIdentification.get("number")).get("default");
+
+        Optional<FlightDetail> optional = flightDetailService.findByFlightNumberAndActualDepartureTime(
+                flightNumber, departureTime);
+
+        FlightDetail currentFlightDetail;
+
+        if (optional.isPresent()){
+            currentFlightDetail = optional.get();
+        } else {
+            currentFlightDetail = new FlightDetail();
+            String aircraftModel = (String)((HashMap) flightAircraft.get("model")).get("code");
+            String originAirport = (String) ((HashMap)flightOriginDetails.get("code")).get("iata");
+            String originCity = (String) ((HashMap)((HashMap)flightOriginDetails.get("position")).get("region")).get("city");
+            String originCountry = (String) ((HashMap)((HashMap)flightOriginDetails.get("position")).get("country")).get("name");
+
+            String destinationAirport = (String) ((HashMap)flightDestinationDetails.get("code")).get("iata");
+            String destinationCity = (String) ((HashMap)((HashMap)flightDestinationDetails.get("position")).get("region")).get("city");
+            String destinationCountry = (String) ((HashMap)((HashMap)flightDestinationDetails.get("position")).get("country")).get("name");
+
+            currentFlightDetail.setFlightNumber(flightNumber);
+            currentFlightDetail.setAircraftModel(aircraftModel);
+
+            currentFlightDetail.setOriginAirport(originAirport);
+            currentFlightDetail.setOriginCity(originCity);
+            currentFlightDetail.setOriginCountry(originCountry);
+
+            currentFlightDetail.setDestinationAirport(destinationAirport);
+            currentFlightDetail.setDestinationCity(destinationCity);
+            currentFlightDetail.setDestinationCountry(destinationCountry);
+
+            currentFlightDetail.setAirlineName(destinationCountry);
+
+            currentFlightDetail.setScheduledDepartureTime(DateUtils.epochToDate((Integer) flightScheduledTimeDetails.get("departure")));
+            currentFlightDetail.setScheduledArrivalTime(DateUtils.epochToDate((Integer) flightScheduledTimeDetails.get("arrival")));
+            currentFlightDetail.setActualDepartureTime(DateUtils.epochToDate((Integer) flightActualTimeDetails.get("departure")));
+            currentFlightDetail.setActualArrivalTime(DateUtils.epochToDate((Integer) flightActualTimeDetails.get("arrival")));
+        }
+        flightDetailService.save(currentFlightDetail);
     }
 
     public JSONObject getFlightDetail(String flightId, String version) {
