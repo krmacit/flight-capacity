@@ -42,8 +42,8 @@ public class FlightRadarService {
     public static final BigDecimal longitudeStep = BigDecimal.valueOf(20).setScale(2, RoundingMode.HALF_EVEN);
 
     @Getter
-    @Value("#{'flight-radar.api.get-flights.non-valid-keys'.split(';')}")
-    public List<String> nonValidKeys;
+    @Value("${flight-radar.api.get-flights.non-valid-keys}")
+    public List<String> nonValidKeys;;
 
     private final FlightRadarClient flightRadarClient;
     private final FlightRadarApiClient flightRadarApiClient;
@@ -60,14 +60,17 @@ public class FlightRadarService {
                 if (BooleanUtils.isFalse(nonValidKeys.contains(key))) {
                     String[] values = jsonObject.get(key).toString().split(",");
                     String number = values[13];
-                    String flightCodeString = number.substring(3);
 
-                    if (number.length() < 3 || BooleanUtils.isFalse(NumberUtils.isCreatable(flightCodeString))) {
+                    if (number.startsWith(" ")){
+                        number = number.substring(1);
+                    }
+
+                    if (number.length() < 3 || BooleanUtils.isFalse(NumberUtils.isParsable(number.substring(2)))) {
                         continue;
                     }
 
-                    String carrierCode = number.substring(0, 3);
-                    Integer flightCode = NumberUtils.createInteger(flightCodeString);
+                    String carrierCode = number.substring(0, 2);
+                    Integer flightCode = Integer.parseInt(number.substring(2));
                     mergeFlightNumber(number, carrierCode, flightCode, currentDate);
                 }
             }
