@@ -2,6 +2,7 @@ package com.cargis.flightcapacity.service;
 
 import com.cargis.flightcapacity.client.flightradar.FlightRadarApiClient;
 import com.cargis.flightcapacity.client.flightradar.FlightRadarClient;
+import com.cargis.flightcapacity.controller.FlightNumberController;
 import com.cargis.flightcapacity.model.FlightDetail;
 import com.cargis.flightcapacity.model.FlightNumber;
 import com.cargis.flightcapacity.util.DateUtils;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +77,7 @@ public class FlightRadarService {
                 }
             }
         }
+        log.info("All flights are acquired.");
     }
 
     private void mergeFlightNumber(String number, String carrierCode, Integer flightCode, Date currentDate) {
@@ -88,9 +91,25 @@ public class FlightRadarService {
             flightNumber.setCarrierCode(carrierCode);
             flightNumber.setFlightCode(flightCode);
             flightNumber.setCreatedDate(currentDate);
+            flightNumber.setLastProcessDate(currentDate);
         }
         flightNumber.setLastSeenDate(currentDate);
         flightNumberService.save(flightNumber);
+    }
+
+    public void getAllFlightDetails(){
+        Date currentDate;
+        List<FlightNumber> allFlightNumber = flightNumberService.findAll();
+        for(FlightNumber currentFlight : allFlightNumber){
+            if (ObjectUtils.isEmpty(currentFlight.getUpdatedDate()) || currentFlight.getUpdatedDate().after(currentFlight.getLastSeenDate())){
+                getFlightDetails(currentFlight.getNumber());
+                currentDate = getCurrentDate();
+                currentFlight.setUpdatedDate(currentDate);
+                currentFlight.setLastProcessDate(currentDate);
+                flightNumberService.save(currentFlight);
+            }
+        }
+        log.info("All flight details are acquired.");
     }
 
     public void getFlightDetails(String flightNumber) {
@@ -101,7 +120,6 @@ public class FlightRadarService {
         for (int i = 0; i < itemCount ; i++) {
             mergeFlightDetails(allFlightDataList.get(i));
         }
-        log.info("Flight Details with: {} have been processed successfully", flightNumber);
     }
 
     private void mergeFlightDetails(HashMap flightDetail) {
