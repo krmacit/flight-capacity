@@ -30,6 +30,12 @@ public class FlightRadarController {
         return ResponseEntity.ok(flightRadarService.getFlightDetail(flightId, version));
     }
 
+    @RequestMapping(value = "/flightDetail")
+    public ResponseEntity getFlightDetails(){
+        flightRadarService.getAllFlightDetails();
+        return ResponseEntity.ok().build();
+    }
+
     @RequestMapping(value = "/flightDetail/{query}")
     public ResponseEntity getFlightDetails(@PathVariable String query) {
         flightRadarService.getFlightDetails(query);

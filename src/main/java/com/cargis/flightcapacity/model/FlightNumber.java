@@ -46,4 +46,6 @@ public class FlightNumber {
     @Column(name = "LAST_PROCESS_DATE")
     private Date lastProcessDate;
 
+    @Column(name = "FLIGHT_RADAR_ID")
+    private Long flightRadarID;
 }

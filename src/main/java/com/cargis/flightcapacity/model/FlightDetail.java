@@ -68,4 +68,7 @@ public class FlightDetail {
 
     @Column(name = "ACTUAL_ARRIVAL_TIME")
     private Date actualArrivalTime;
+
+    @Column(name="FLIGHT_RADAR_DETAIL_ID")
+    private Long flightRadarDetailID;
 }

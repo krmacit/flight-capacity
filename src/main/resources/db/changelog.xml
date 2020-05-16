@@ -55,4 +55,16 @@
         <createSequence sequenceName="SEQ_FLIGHT_NUMBER"/>
     </changeSet>
 
+    <changeSet id="2020-05-16 01:34" author="kerim.can.macit" >
+        <addColumn tableName="FLIGHT_NUMBER">
+            <column name="FLIGHT_RADAR_ID" type="BIGINT"/>
+        </addColumn>
+
+        <addColumn tableName="FLIGHT_DETAIL">
+            <column name="FLIGHT_RADAR_DETAIL_ID" type="BIGINT"/>
+        </addColumn>
+
+        <createSequence sequenceName="SEQ_FLIGHT_NUMBER"/>
+    </changeSet>
+
 </databaseChangeLog>

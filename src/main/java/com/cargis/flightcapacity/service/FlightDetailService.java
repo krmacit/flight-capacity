@@ -37,6 +37,10 @@ public class FlightDetailService {
         return flightDetailRepository.findByFlightNumberAndActualDepartureTime(flightNumber, actualDepartureTime);
     }
 
+    public Optional<FlightDetail> findByFlightRadarDetailID(Long flightRadarDetailID) {
+        return flightDetailRepository.findByFlightRadarDetailID(flightRadarDetailID);
+    }
+
     public void delete(Long id) {
         flightDetailRepository.deleteById(id);
     }
