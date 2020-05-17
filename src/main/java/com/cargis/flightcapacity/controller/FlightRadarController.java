@@ -42,4 +42,10 @@ public class FlightRadarController {
         return ResponseEntity.ok().build();
     }
 
+    @RequestMapping(value = "/startApp")
+    public ResponseEntity startApp(){
+        flightRadarService.startApp();
+        return ResponseEntity.ok().build();
+    }
+
 }

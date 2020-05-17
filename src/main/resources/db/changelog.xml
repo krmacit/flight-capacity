@@ -67,4 +67,33 @@
         <createSequence sequenceName="SEQ_FLIGHT_NUMBER"/>
     </changeSet>
 
+    <changeSet id="2020-05-16 15:21" author="kerim.can.macit" >
+        <modifyDataType  columnName="FLIGHT_RADAR_ID" newDataType="TEXT" tableName="FLIGHT_NUMBER"/>
+
+        <modifyDataType  columnName="FLIGHT_RADAR_DETAIL_ID" newDataType="TEXT" tableName="FLIGHT_DETAIL"/>
+
+        <createSequence sequenceName="SEQ_FLIGHT_NUMBER"/>
+    </changeSet>
+
+    <changeSet id="2020-05-16 21:44" author="kerim.can.macit" >
+        <addColumn tableName="FLIGHT_DETAIL">
+            <column name="AIRCRAFT_MODEL_TEXT" type="TEXT"/>
+        </addColumn>
+
+        <addColumn tableName="FLIGHT_DETAIL">
+            <column name="AIRCRAFT_REGISTRATION" type="TEXT"/>
+        </addColumn>
+
+        <createSequence sequenceName="SEQ_FLIGHT_DETAIL"/>
+    </changeSet>
+
+    <changeSet id="2020-05-16 23:40" author="kerim.can.macit" >
+        <addColumn tableName="FLIGHT_DETAIL">
+            <column name="AIRLINE_SHORT_NAME" type="TEXT"/>
+        </addColumn>
+
+        <createSequence sequenceName="SEQ_FLIGHT_DETAIL"/>
+    </changeSet>
+
+
 </databaseChangeLog>

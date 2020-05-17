@@ -50,6 +50,21 @@ public class FlightRadarService {
     private final FlightNumberService flightNumberService;
     private final FlightDetailService flightDetailService;
 
+    @SneakyThrows
+    public void startApp(){
+        int count = 0;
+        getFlights();
+        while (true){
+            new Thread(() -> getFlights()).start();
+            if (count %48 == 0){
+                new Thread(() -> getAllFlightDetails()).start();
+            }
+            count++;
+            log.info("All flights are acquired {}. times.",count);
+            TimeUnit.MINUTES.sleep(15);
+        }
+    }
+
     public void getFlights() {
         for (BigDecimal value = minimumLongitude; value.compareTo(maximumLongitude) < 0; value = value.add(longitudeStep)) {
             String bounds = String.join(",", maximumLatitude.toString(), minimumLatitude.toString(),
@@ -71,14 +86,13 @@ public class FlightRadarService {
 
                     String carrierCode = number.substring(0, 2);
                     Integer flightCode = Integer.parseInt(number.substring(2));
-                    mergeFlightNumber(number, carrierCode, flightCode, currentDate, (Long) key);
+                    mergeFlightNumber(number, carrierCode, flightCode, currentDate, (String) key);
                 }
             }
         }
-        log.info("All flights are acquired.");
     }
 
-    private void mergeFlightNumber(String number, String carrierCode, Integer flightCode, Date currentDate, Long flightRadarID) {
+    private void mergeFlightNumber(String number, String carrierCode, Integer flightCode, Date currentDate, String flightRadarID) {
         Optional<FlightNumber> optional = flightNumberService.findByNumber(number);
         FlightNumber flightNumber;
         if (optional.isPresent()) {
@@ -115,10 +129,12 @@ public class FlightRadarService {
                 currentFlight.setLastProcessDate(currentDate);
                 flightNumberService.save(currentFlight);
             }
-            TimeUnit.SECONDS.sleep(random.nextInt(10) + 1);
+            TimeUnit.SECONDS.sleep(2);
             currentFlightNumber++;
-            if (currentFlightNumber % 100 == 0) {
+            if (currentFlightNumber % 10 == 0) {
                 log.info("{}. flight detail of {} has been added.", currentFlightNumber, numberOfFlight);
+                TimeUnit.SECONDS.sleep((long) (random.nextGaussian() * 15 + 1));
+
             }
         }
         log.info("All flight details are acquired.");
@@ -127,10 +143,13 @@ public class FlightRadarService {
     public void getFlightDetails(String flightNumber) {
         JSONObject jsonObject = flightRadarApiClient.getFlightDetails(flightNumber);
         Map results = (Map) ((Map) jsonObject.get("result")).get("response");
+        Boolean nullCheck = true;
         int itemCount = (Integer) ((Map) results.get("item")).get("current");
         ArrayList<HashMap> allFlightDataList = (ArrayList) results.get("data");
         for (int i = 0; i < itemCount ; i++) {
-            mergeFlightDetails(allFlightDataList.get(i));
+            if (BooleanUtils.isFalse((String) ((HashMap)(allFlightDataList.get(i)).get("identification")).get("id") == null)) {
+                mergeFlightDetails(allFlightDataList.get(i));
+            }
         }
     }
 
@@ -139,12 +158,13 @@ public class FlightRadarService {
         HashMap flightStatus = (HashMap) flightDetail.get("status");
         HashMap flightAircraft = (HashMap) flightDetail.get("aircraft");
         HashMap flightOwner = (HashMap) flightDetail.get("owner");
+        HashMap flightAirline = (HashMap) flightDetail.get("airline");
         HashMap flightOriginDetails = (HashMap)((HashMap) flightDetail.get("airport")).get("origin");
         HashMap flightDestinationDetails = (HashMap)((HashMap) flightDetail.get("airport")).get("destination");
         HashMap flightActualTimeDetails = (HashMap)((HashMap) flightDetail.get("time")).get("real");
         HashMap flightScheduledTimeDetails = (HashMap)((HashMap) flightDetail.get("time")).get("scheduled");
         String flightNumber = (String) ((HashMap) flightIdentification.get("number")).get("default");
-        Long flightRadarDetailID = (Long) flightIdentification.get("id");
+        String flightRadarDetailID = (String) flightIdentification.get("id");
 
         Optional<FlightDetail> optional = flightDetailService.findByFlightRadarDetailID(flightRadarDetailID);
 
@@ -155,6 +175,8 @@ public class FlightRadarService {
             currentFlightDetail = new FlightDetail();
 
             String aircraftModel = getFromJSON(flightAircraft, Arrays.asList("model", "code"));
+            String aircraftModelText = getFromJSON(flightAircraft, Arrays.asList("model", "text"));
+            String aircraftRegistration = getFromJSON(flightAircraft, Arrays.asList("registration"));
             String originAirport = getFromJSON(flightOriginDetails, Arrays.asList("code", "iata"));
             String originCity = getFromJSON(flightOriginDetails, Arrays.asList("position", "region", "city"));
             String originCountry = getFromJSON(flightOriginDetails, Arrays.asList("position", "country", "name"));
@@ -163,8 +185,14 @@ public class FlightRadarService {
             String destinationCity = getFromJSON(flightDestinationDetails, Arrays.asList("position", "region", "city"));
             String destinationCountry = getFromJSON(flightDestinationDetails, Arrays.asList("position", "country", "name"));
 
+            String airlineName = getFromJSON(flightAirline, Arrays.asList("name"));
+            String airlineShortName = getFromJSON(flightAirline, Arrays.asList("code", "iata"));
+
             currentFlightDetail.setFlightNumber(flightNumber);
             currentFlightDetail.setAircraftModel(aircraftModel);
+            currentFlightDetail.setAircraftModelText(aircraftModelText);
+            currentFlightDetail.setAircraftRegistration(aircraftRegistration);
+
             currentFlightDetail.setFlightRadarDetailID(flightRadarDetailID);
 
             currentFlightDetail.setOriginAirport(originAirport);
@@ -175,7 +203,8 @@ public class FlightRadarService {
             currentFlightDetail.setDestinationCity(destinationCity);
             currentFlightDetail.setDestinationCountry(destinationCountry);
 
-            currentFlightDetail.setAirlineName(destinationCountry);
+            currentFlightDetail.setAirlineName(airlineName);
+            currentFlightDetail.setAirlineShortName(airlineShortName);
 
             currentFlightDetail.setScheduledDepartureTime(DateUtils.epochToDate((Integer) flightScheduledTimeDetails.get("departure")));
             currentFlightDetail.setScheduledArrivalTime(DateUtils.epochToDate((Integer) flightScheduledTimeDetails.get("arrival")));

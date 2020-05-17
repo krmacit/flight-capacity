@@ -36,6 +36,12 @@ public class FlightDetail {
     @Column(name = "AIRCRAFT_MODEL")
     private String aircraftModel;
 
+    @Column(name = "AIRCRAFT_MODEL_TEXT")
+    private String aircraftModelText;
+
+    @Column(name="AIRCRAFT_REGISTRATION")
+    private String aircraftRegistration;
+
     @Column(name = "ORIGIN_AIRPORT")
     private String originAirport;
 
@@ -57,6 +63,9 @@ public class FlightDetail {
     @Column(name = "AIRLINE_NAME")
     private String airlineName;
 
+    @Column(name = "AIRLINE_SHORT_NAME")
+    private String airlineShortName;
+
     @Column(name = "SCHEDULED_DEPARTURE_TIME")
     private Date scheduledDepartureTime;
 
@@ -70,5 +79,7 @@ public class FlightDetail {
     private Date actualArrivalTime;
 
     @Column(name="FLIGHT_RADAR_DETAIL_ID")
-    private Long flightRadarDetailID;
+    private String flightRadarDetailID;
+
+
 }
