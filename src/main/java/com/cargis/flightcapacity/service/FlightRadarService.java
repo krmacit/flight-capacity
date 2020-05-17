@@ -56,7 +56,7 @@ public class FlightRadarService {
         getFlights();
         while (true){
             new Thread(() -> getFlights()).start();
-            if (count %48 == 0){
+            if (count %96 == 0){
                 new Thread(() -> getAllFlightDetails()).start();
             }
             count++;
@@ -120,7 +120,7 @@ public class FlightRadarService {
         List<FlightNumber> allFlightNumber = flightNumberService.findAll();
         Integer numberOfFlight = allFlightNumber.size();
         Integer currentFlightNumber = 0;
-        Random random = new Random();
+        Integer cumFlightNumber = 0;
         for (FlightNumber currentFlight : allFlightNumber) {
             if (ObjectUtils.isEmpty(currentFlight.getUpdatedDate()) || currentFlight.getUpdatedDate().after(currentFlight.getLastSeenDate())) {
                 getFlightDetails(currentFlight.getNumber());
@@ -128,20 +128,26 @@ public class FlightRadarService {
                 currentFlight.setUpdatedDate(currentDate);
                 currentFlight.setLastProcessDate(currentDate);
                 flightNumberService.save(currentFlight);
+                currentFlightNumber++;
+                TimeUnit.SECONDS.sleep((long) (4));
+                if (currentFlightNumber % 10 == 0) {
+                    log.info("{}. pull request for {}. flight detail of {} has been added.", currentFlightNumber, cumFlightNumber, numberOfFlight);
+                }
             }
-            TimeUnit.SECONDS.sleep(2);
-            currentFlightNumber++;
-            if (currentFlightNumber % 10 == 0) {
-                log.info("{}. flight detail of {} has been added.", currentFlightNumber, numberOfFlight);
-                TimeUnit.SECONDS.sleep((long) (random.nextGaussian() * 15 + 1));
-
-            }
+            cumFlightNumber++;
         }
         log.info("All flight details are acquired.");
     }
 
+    @SneakyThrows
     public void getFlightDetails(String flightNumber) {
-        JSONObject jsonObject = flightRadarApiClient.getFlightDetails(flightNumber);
+        JSONObject jsonObject;
+        try {
+            jsonObject = flightRadarApiClient.getFlightDetails(flightNumber);
+        } catch (Exception e) {
+            TimeUnit.MINUTES.sleep(1);
+            return;
+        }
         Map results = (Map) ((Map) jsonObject.get("result")).get("response");
         Boolean nullCheck = true;
         int itemCount = (Integer) ((Map) results.get("item")).get("current");
